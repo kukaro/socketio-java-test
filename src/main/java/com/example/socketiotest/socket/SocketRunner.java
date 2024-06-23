@@ -18,7 +18,7 @@ public class SocketRunner implements CommandLineRunner {
     public void run(String... args) throws Exception {
         socketIOServer.addConnectListener(client -> {
             log.info("client connected");
-            client.sendEvent("suc", "Hello, " + client.getSessionId());
+            client.sendEvent("recMsg", "Hello, " + client.getSessionId());
         });
         socketIOServer.addDisconnectListener(client -> {
             log.info("client disconnected");

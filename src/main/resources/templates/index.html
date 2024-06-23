@@ -17,8 +17,8 @@
     socket.emit('join', {roomName: 'myroom'});
 
     socket.on('recMsg', function (data) {
-        console.log(data.comment)
-        document.querySelector('#chat').value += data.comment + '\n';
+        console.log(data)
+        document.querySelector('#chat').value += data + '\n';
     });
 
     function myOnClick() {

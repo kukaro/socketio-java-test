@@ -16,7 +16,7 @@ public class SocketConfig {
     public SocketIOServer socketIOServer() {
         Configuration config = new Configuration();
         config.setPort(8081);
-//        config.setOrigin("*");
+        config.setOrigin("*");
         SocketIOServer server = new SocketIOServer(config);
         mappingSupporter.addListeners(server);
         return server;
