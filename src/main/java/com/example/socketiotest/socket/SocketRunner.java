@@ -4,8 +4,9 @@ import com.corundumstudio.socketio.SocketIOServer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+
+import static java.lang.StringTemplate.STR;
 
 @RequiredArgsConstructor
 @Component
@@ -17,21 +18,30 @@ public class SocketRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         socketIOServer.addConnectListener(client -> {
-            log.info("client connected");
-            client.sendEvent("recMsg", "Hello, " + client.getSessionId());
+            log.info("#client connected");
         });
         socketIOServer.addDisconnectListener(client -> {
-            log.info("client disconnected");
+            log.info("#client disconnected");
         });
-        socketIOServer.addEventListener("join", Object.class, (client, data, ackSender) -> {
-            System.out.println(data);
-            client.sendEvent("chat", data);
+        socketIOServer.addEventListener("join", Message.class, (client, data, ackSender) -> {
+            String socketId = client.getSessionId().toString();
+            log.info(STR."#ON JOIN roomName : \{data.roomName()}, socketId : \{socketId}");
+            client.joinRoom(data.roomName());
+            socketIOServer.getRoomOperations(data.roomName()).sendEvent("recMsg", new Message(STR."\{socketId} : \{data.roomName()}\n", null));
+//            client.sendEvent("recMsg", new Message(STR."\{socketId} : \{data.roomName()}", null));
         });
-        socketIOServer.addEventListener("hi", String.class, (client, data, ackSender) -> {
-            System.out.println(data);
-            client.sendEvent("chat", data);
+        socketIOServer.addEventListener("msg", Message.class, (client, data, ackSender) -> {
+            log.info("#ON MSG");
+            String socketId = client.getSessionId().toString();
+            socketIOServer.getRoomOperations(data.roomName()).sendEvent("recMsg", new Message(STR."\{socketId} : \{data.comment()}\n", null));
         });
         socketIOServer.start();
     }
 
+}
+
+record Message(
+        String comment,
+        String roomName
+) {
 }

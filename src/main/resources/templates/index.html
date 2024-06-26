@@ -5,27 +5,30 @@
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js" integrity="sha384-2huaZvOR9iDzHqslqwpR87isEmrfxqyWOF7hr7BY6KG0+hVKLoEXMPUJw3ynWuhO" crossorigin="anonymous"></script>
 </head>
 <body>
-
 <textarea rows="20" cols="30" id="chat"></textarea><br>
 <input type="text" id="user"><input type="button" value="msg submit" onclick="myOnClick()">
-
+</body>
 <script>
     const socket = io.connect('http://localhost:8081', {
         // cors: {origin: '*'}
     });
+    const roomNames = ['myroom', 'yourroom'];
+    const roomName = (() => {
+        return roomNames[Math.floor(Math.random() * roomNames.length)]
+    })();
 
-    socket.emit('join', {roomName: 'myroom'});
+    socket.emit('join', {roomName});
 
     socket.on('recMsg', function (data) {
-        console.log(data)
-        document.querySelector('#chat').value += data + '\n';
+        console.log(data);
+        document.querySelector('#chat').value += data.comment;
     });
 
     function myOnClick() {
-
-        socket.emit("msg", {comment: document.querySelector('#chat').value});
-        document.querySelector('#chat').value = '';
+        const comment = document.querySelector('#user').value;
+        // socket.emit("msg", {comment});
+        socket.emit("msg", {comment, roomName});
+        document.querySelector('#user').value = '';
     }
 </script>
-</body>
 </html>

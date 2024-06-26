@@ -28,6 +28,11 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
+compileJava {
+    options.compilerArgs += ['--enable-preview']
+}
+
+
 tasks.named('test') {
     useJUnitPlatform()
 }
